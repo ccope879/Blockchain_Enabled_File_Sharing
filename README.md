@@ -38,7 +38,15 @@ On full nodes:
 	
  b) Take note of the IP for each machine.
 
-2) Run the main program on the primary node:
+ c) Take note of the network interface name
+
+2) Update the network interface name
+
+a) Open comboGUI.py
+
+b) Replace in myIP() the value in quotes "" to match your network interface name.
+
+3) Run the main program on the primary node:
 	
  a) Navigate to the project directory.
 	
@@ -46,7 +54,7 @@ On full nodes:
 	
  c) Input the IP of the second machine into the window's IP text box.
 
-3) Run the main program on secondary nodes:
+4) Run the main program on secondary nodes:
 	
  a) Navigate to the project directory.
 	
@@ -55,7 +63,7 @@ On full nodes:
  c) Input the IP of the first machine into the window's IP text box.
 
 For all future machines:
-4) Run the main program:
+5) Run the main program:
 	
  a) Navigate to the project directory.
 	
