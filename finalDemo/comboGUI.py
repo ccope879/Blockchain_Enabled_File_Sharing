@@ -33,9 +33,6 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #new socket object
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 samaritan = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 self_samaritan = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-lightweight1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-lightweight2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 lwserver = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 
 neighbor_nodes = []
