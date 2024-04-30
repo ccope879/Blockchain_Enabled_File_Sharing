@@ -44,7 +44,7 @@ On full nodes:
 
 a) Open comboGUI.py
 
-b) Replace in myIP() the value in quotes "" to match your network interface name.
+b) Replace in myIP() the value in quotes ' ' to match your network interface name. ( return (ni.ifaddresses('< YOUR INTERFACE NAME HERE>')[ni.AF_INET][0]['addr']))
 
 3) Run the main program on the primary node:
 	
