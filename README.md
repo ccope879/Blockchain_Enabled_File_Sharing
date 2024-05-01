@@ -73,6 +73,28 @@ For all future machines:
  c) Input the IP of any existing machine running the program into the window's IP text box.
 ***************************
 
+To download the application code to Android Studio:
+
+Download the UAHTeam5BlockchainApp directory
+
+Open Android Studio and from the title bar, select File, New, Import Project
+
+Navigtate to the directory where the folder UAHTeam5BlockchainApp is stored and select the UAHTeam5BlockchainApp folder
+
+Select OK and wait for the project to initialize.
+
+To install the app on an Android device:
+
+Ensure the device has developer options enabled: https://developer.android.com/studio/debug/dev-options
+
+Connect the device to the computer: https://developer.android.com/studio/run/device
+
+Android Studio should automatically recognize the device and target it for installation.
+
+From the title bar, press the green play button to install and run the app on the device.
+
+***************************
+
 
 **** Using the project ****
 1) Login using existing credentials on the blockchain:
