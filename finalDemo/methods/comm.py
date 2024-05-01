@@ -49,13 +49,6 @@ def bindasServer(port, server):
     myip = myIP() # I am the server
     server.bind((myip, port)) # I am the server
 
-def closeneighborConnection(neighbor): #samaritan method
-    #time.sleep(0.5) #without the client sees "acceptedclosed"
-    senddatatoneighbor(neighbor, "closed")
-    time.sleep(1)
-    neighbor.close()
-    print("I am samaritan. Connection to neighbor closed")
-
 def closerequesterConnection(requester_socket): #server method
     time.sleep(0.5) #without the client sees "acceptedclosed"
     senddatatorequester(requester_socket, "closed")
