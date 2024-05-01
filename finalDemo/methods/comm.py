@@ -150,9 +150,6 @@ def requestsustainedConnection(samaritan_ip, samaritan_port, client): #client me
     try:
         write_to_client_out(f"Trying to connect to: {samaritan_ip}:{samaritan_port}")
         client.connect((samaritan_ip, samaritan_port)) #client requests to connect to server
-        #message = "beginning sustained connection. love, neighbor"
-        #senddatatosamaritan(message)
-        #response = receivedatafromsamaritan(client)
     except Exception as e: write_to_client_out(e)
 
 def senddatafromclient(data, client): #client method, buffer size 1024 may need to increase to accomodate blockchain message
