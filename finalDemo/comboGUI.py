@@ -268,7 +268,7 @@ def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,sel
     
     comm.bindasServer(connectport, server)
     comm.listenforRequests(connectport, server)
-    blockchain2 = ""
+    parentblock = ""
     
     time.sleep(0.5)
     try:
@@ -352,7 +352,7 @@ def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,sel
                             neighbor_nodes.append(new_neighbor)
                             print("Appended neighbor: ", neighbor_nodes)
                         if(not parent_to_child.empty()):
-                            blockchain2 = parent_to_child.get()
+                            parentblock = parent_to_child.get()
 
                         if(not client_to_self_samaritan.empty()):
                             call = client_to_self_samaritan.get()
@@ -364,7 +364,7 @@ def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,sel
                                 time.sleep(.5)
                                 
                                 print("*** Sending data to neighbor!")
-                                comm.senddatatoneighbor(n, blockchain2)
+                                comm.senddatatoneighbor(n, parentblock)
                                 print("\n\nsent")
 
                         while(not server_to_self_samaritan.empty()):
