@@ -245,7 +245,6 @@ def run_client(parent_to_child,new_client_for_samaritan,self_samaritan_to_client
             recvdlen = int(ind) + 1
 
             if(recvdlen > len(blockchain)):
-                print("abc")
                 convertString(recvd_chain)
                 client_to_server.put("new block update:")
                 client_to_server.put(recvd_chain)
@@ -292,7 +291,7 @@ def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,sel
 
                     print("create blockchain called")
                     parent_to_child.put(towrite)
-                    print("***** LOGIN NOW GO GO GO")
+                    print("login enabled")
 
                 elif (call == "call login"):
                     print("login plz")
