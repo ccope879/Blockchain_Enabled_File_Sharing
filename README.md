@@ -81,7 +81,9 @@ Open Android Studio and from the title bar, select File, New, Import Project
 
 Navigtate to the directory where the folder UAHTeam5BlockchainApp is stored and select the UAHTeam5BlockchainApp folder
 
-Select OK and wait for the project to initialize.<br />
+Select OK and wait for the project to initialize.
+
+***************************
 
 To install the app on an Android device:
 
