@@ -187,13 +187,13 @@ def run_client(parent_to_child,new_client_for_samaritan,self_samaritan_to_client
     # Because I am the first, I create the blockchain.
     hasCalledCreateBlockchain = False
     while(1):
-        try:
+        try: #attempt to connect to inputted ip
             samaritan_ip, samaritan_port = comm.requestConnection(initial_samaritan_jointo_ip, connectport, initial_client, givenport)
             comm.write_to_client_out ("server accepted my client connection. hooray!")
             client_to_server.put("call login")
             print("Calling login")
             break
-        except:
+        except: #if the node at that ip is not running, start a blockchain since I am the first
             comm.write_to_client_out("I am client. My request to connect to a server failed.")
             if (len(blockchain) == 0) and not hasCalledCreateBlockchain:
                 print("Calling create blockchain!")
@@ -201,7 +201,7 @@ def run_client(parent_to_child,new_client_for_samaritan,self_samaritan_to_client
                 hasCalledCreateBlockchain = True
 
     while(1):
-        try:
+        try: #connect to the server on the samaritan port it gave to client
             comm.write_to_client_out(f"samaritan receiveport is: {samaritan_port}")
             time.sleep(1)
             comm.requestsustainedConnection(samaritan_ip, samaritan_port, client)
@@ -212,14 +212,14 @@ def run_client(parent_to_child,new_client_for_samaritan,self_samaritan_to_client
         
         time.sleep(1.5)
 
-        while(not server_to_client.empty()):
+        while(not server_to_client.empty()): #retrieve server updates for client if there are any
             receivedblock = server_to_client.get()
             print("THIS IS THE FIRST RECIEVED BLOCK:", receivedblock)
             client_to_self_samaritan.put("new blockchain:")
             client_to_self_samaritan.put(receivedblock)
 
     try:
-        while(1): #automatic close response present in receivedatafromserver            
+        while(1): # request blockchain updates fro samaritans        
 
             print("Requesting the blockchain...")
             comm.senddatafromclient("requesting your blockchain", client)
@@ -227,6 +227,7 @@ def run_client(parent_to_child,new_client_for_samaritan,self_samaritan_to_client
             recvd_chain = comm.receivedatafromsamaritan(client)
             workwith = recvd_chain
 
+            #count blocks in samaritan blcockchain
             p_split = workwith.split("Index:")
             temp = p_split[-1]
             temp2 = temp.split("\n")
@@ -244,13 +245,13 @@ def run_client(parent_to_child,new_client_for_samaritan,self_samaritan_to_client
 
             recvdlen = int(ind) + 1
 
-            if(recvdlen > len(blockchain)):
+            if(recvdlen > len(blockchain)): #only update if samaritan has a newer blockchain
                 convertString(recvd_chain)
                 client_to_server.put("new block update:")
                 client_to_server.put(recvd_chain)
                 print("converted string")
 
-            while(not server_to_client.empty()):
+            while(not server_to_client.empty()): #retrieve server updates for client if there are any
                 receivedblock = server_to_client.get()
                 print("THIS IS THE RECIEVED BLOCK:", receivedblock)
                 client_to_self_samaritan.put("new blockchain:")
@@ -279,9 +280,9 @@ def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,sel
             while(client_to_server.empty()):
                 time.sleep(.5)
 
-            if (not client_to_server.empty()):
+            if (not client_to_server.empty()): #retrieve client updates for server if there are any
                 call = client_to_server.get()
-                if (call == "call create blockchain"):
+                if (call == "call create blockchain"): #if client signaled to create blockchain, then call create blockchain
                     newBlockchain()
                     towrite = assembleBlockchain()
                     if len(blockchain) < 1:
@@ -293,14 +294,14 @@ def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,sel
                     parent_to_child.put(towrite)
                     print("login enabled")
 
-                elif (call == "call login"):
+                elif (call == "call login"): # if client signaled to call login, then call login
                     print("login plz")
                     print("Waiting for blockchain arrival...")
                     while len(blockchain) < 1:
                         time.sleep(0.25)
                     print("Got blockchain!")
 
-                elif (call == "new blockchain update:"):
+                elif (call == "new blockchain update:"): # if client signaled a new blockcain update, retrieve it
                     call = client_to_server.get()
                     convertString(call)
             # **********************************************************
@@ -325,6 +326,8 @@ def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,sel
                 print("Parent process1 PID:", ppid)
                 child_pid = os.fork()
                 #samaritan runs child, server stays parent
+                
+                #SAMARITAN CODE:
                 if child_pid == 0:            #   This code is executed by the child process\
                     while not isValidAddress:
                         try:
@@ -359,7 +362,7 @@ def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,sel
                             if(call == "new blockchain:"):
                                 call = client_to_self_samaritan.get()
                                 convertString(call)
-
+                        #send blockchain updates to every connected neighbor
                         for n in neighbor_nodes:
                                 time.sleep(.5)
                                 
@@ -374,21 +377,20 @@ def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,sel
 
                             print("Blockchain updated by server")
                         
-                else: #SERVER
+                else: #SERVER CODE
 
                     #check
-                    if(not lw_to_full.empty()):
+                    if(not lw_to_full.empty()): #check for udates from lw neighbors
                         lwBlk = lw_to_full.get()
                         blockchain.append(lwBlk)
 
                     while(1):
                         time.sleep(1)
 
-    except OSError:
-        print("it's the outer except")
+    except OSError: #catch and release errors from neighbors disconnecting abrubtly
         pass
 
-def pickWinner(server_to_client,server_to_self_samaritan, parent_to_child):
+def pickWinner(server_to_client,server_to_self_samaritan, parent_to_child): #decide next candidate block to add to blockchain
     print("\nPicking winner...")
     while stopThreads == False:
         time.sleep(.15) # .15 second refresh
@@ -445,7 +447,7 @@ def run_LW(lw_to_full, validator):
         connected = True
         lwMsg = comm.receivedatafromrequester(lw1)
         while(connected):
-            if(lwMsg == "Get_Blockchain"):
+            if(lwMsg == "Get_Blockchain"): #send the lightweight device my copy of the blockchain upon request
                 sendBlckchn = assembleBlockchain()
                 comm.senddatatorequester(lw1,sendBlckchn)
                 print("sent message")
@@ -453,7 +455,7 @@ def run_LW(lw_to_full, validator):
                 lw1.close()
                 connected = False
 
-            elif(lwMsg == "Upload_File"):
+            elif(lwMsg == "Upload_File"): #create an upload file transaction block on behalf of the lightweight node upon request
                 rcv = comm.receivedatafromrequester(lw1)
                 divided = rcv.split(' ')
                 print(divided)
@@ -469,7 +471,7 @@ def run_LW(lw_to_full, validator):
                 lw1.close()
                 connected = False
 
-            elif(lwMsg == "Download_File"):
+            elif(lwMsg == "Download_File"): #create a download file transaction block on behalf of the lightweight node upon request
                 rcv = comm.receivedatafromrequester(lw1)
                 divided = rcv.split(' ')
                 print(divided)
@@ -483,7 +485,7 @@ def run_LW(lw_to_full, validator):
                 lw1.close()
                 connected = False
 
-            elif(lwMsg == "Create_User"):
+            elif(lwMsg == "Create_User"): #create a create user transaction block on behalf of the lightweight node upon request
                 rcv = comm.receivedatafromrequester(lw1)
                 divided = rcv.split(' ')
                 print(divided)
@@ -500,7 +502,7 @@ def run_LW(lw_to_full, validator):
 
             time.sleep(0.2)
 
-def runInput(server_input_to_server, validator):
+def runInput(server_input_to_server, validator): # handle user actions
     print(f"Running runInput...")
     while True:
         while not GUI.isLoggedIn:
@@ -661,7 +663,7 @@ def expandCredentials(block): #assembles user credential block to be sent to req
     message3 = "\n" + username + "\n" + password + "\n" + role + "\n" + type
     return message3
 
-def convertString(currentBlockchain):
+def convertString(currentBlockchain): #update blockchain from blockchain string
     blockDictionary = {}
     delimiters = ["\n"]
     for delimiter in delimiters:
@@ -741,7 +743,7 @@ def createValidator(currentAccount):
 
     return newValidator
 
-def createAccount(username, password, name, roleSelection): # , root
+def createAccount(username, password, name, roleSelection): 
     # print("role is " + roleSelection)
     if roleSelection == "Admin":
         role = "a"
