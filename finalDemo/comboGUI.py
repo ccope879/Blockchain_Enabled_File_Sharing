@@ -156,16 +156,15 @@ def main():
     lw_to_full = multiprocessing.Queue()
 
     parent_to_child = multiprocessing.Queue()
-    child_to_parent = multiprocessing.Queue()
     new_client_for_samaritan = multiprocessing.Queue()
 
     time.sleep(0.5)
     
 
-    threading.Thread(target=run_server, args=(lw_to_full,child_to_parent,parent_to_child,validator,new_client_for_samaritan,self_samaritan_to_client,client_to_self_samaritan,client_to_server,server_to_client,server_to_self_samaritan,self_samaritan_to_server,server_input_to_server,)).start()
+    threading.Thread(target=run_server, args=(lw_to_full,parent_to_child,validator,new_client_for_samaritan,self_samaritan_to_client,client_to_self_samaritan,client_to_server,server_to_client,server_to_self_samaritan,self_samaritan_to_server,server_input_to_server,)).start()
     time.sleep(1)
 
-    threading.Thread(target=run_client, args=(child_to_parent,parent_to_child,new_client_for_samaritan,self_samaritan_to_client,client_to_self_samaritan,client_to_server,server_to_client,server_to_self_samaritan,self_samaritan_to_server,server_input_to_server,)).start()
+    threading.Thread(target=run_client, args=(parent_to_child,new_client_for_samaritan,self_samaritan_to_client,client_to_self_samaritan,client_to_server,server_to_client,server_to_self_samaritan,self_samaritan_to_server,server_input_to_server,)).start()
 
     # Handle candidate blocks in a separate thread
     # Define the lambda function
@@ -176,7 +175,7 @@ def main():
     GUI.root = GUI.setScenes()
     GUI.root.mainloop()
 
-def run_client(child_to_parent,parent_to_child,new_client_for_samaritan,self_samaritan_to_client,client_to_self_samaritan,client_to_server,server_to_client,server_to_self_samaritan,self_samaritan_to_server,server_input_to_server):#self_samaritan_to_client,client_to_self_samaritan): #needs periodic ip requesting(checking) added
+def run_client(parent_to_child,new_client_for_samaritan,self_samaritan_to_client,client_to_self_samaritan,client_to_server,server_to_client,server_to_self_samaritan,self_samaritan_to_server,server_input_to_server):#self_samaritan_to_client,client_to_self_samaritan): #needs periodic ip requesting(checking) added
     comm.write_to_client_out("debug, in client\n")
     initial_samaritan_jointo_ip = ""
     while not GUI.hasInputtedIP:
@@ -261,7 +260,7 @@ def run_client(child_to_parent,parent_to_child,new_client_for_samaritan,self_sam
     except:
         comm.clientOut.close() 
 
-def run_server(lw_to_full,child_to_parent,parent_to_child,validator,new_client_for_samaritan,self_samaritan_to_client,client_to_self_samaritan,client_to_server,server_to_client,server_to_self_samaritan,self_samaritan_to_server,server_input_to_server):#self_samaritan_to_client, client_to_self_samaritan): #add func to talk to samaritan and samaritan to listen to server (listenServer)
+def run_server(lw_to_full,parent_to_child,validator,new_client_for_samaritan,self_samaritan_to_client,client_to_self_samaritan,client_to_server,server_to_client,server_to_self_samaritan,self_samaritan_to_server,server_input_to_server):#self_samaritan_to_client, client_to_self_samaritan): #add func to talk to samaritan and samaritan to listen to server (listenServer)
     global receiveport
     global givenport
     global blockchainMessage
@@ -355,9 +354,6 @@ def run_server(lw_to_full,child_to_parent,parent_to_child,validator,new_client_f
                             print("Appended neighbor: ", neighbor_nodes)
                         if(not parent_to_child.empty()):
                             blockchain2 = parent_to_child.get()
-
-                        if(not child_to_parent.empty()):
-                            blockchain2 = child_to_parent.get()
 
                         if(not client_to_self_samaritan.empty()):
                             call = client_to_self_samaritan.get()
